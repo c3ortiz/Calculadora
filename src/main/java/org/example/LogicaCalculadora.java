@@ -1,26 +1,57 @@
 package org.example;
 
+import java.util.ArrayList;
+
 public class LogicaCalculadora {
-    private Double operandoUno, operandoDos = 0.0;
-    private String operacion;
-
-    public void setOperandoUno(Double operandoUno) {
-        this.operandoUno = operandoUno;
+    boolean numCheck(String num){
+        try{
+            Double.parseDouble(num);
+            return true;
+        }catch(NumberFormatException e){
+            System.out.println("Invalid number");
+            return false;
+        }
     }
 
-    public void setOperandoDos(Double operandoDos) {
-        this.operandoDos = operandoDos;
+    boolean operatorCheck(Character op){
+        return op == '+' || op == '-' || op == '*' || op == '/';
     }
 
-    public void setOperacion(String operacion) {
-        this.operacion = operacion;
+    Double calculate(Double num1, char operator, Double num2){
+        switch (operator){
+            case '+':
+                return num1 + num2;
+            case '-':
+                return num1 - num2;
+            case '*':
+                return num1 * num2;
+            default:
+                return num1 / num2;
+        }
     }
 
-    public Double realizarOperacion() {
-        return operacion.equals("+") ? operandoUno + operandoDos : operandoUno + - operandoDos;
-    }
 
-    public void getResultados() {
-        System.out.println(realizarOperacion());
+    Double orderOperations(ArrayList<Double> numbers, ArrayList<Character> operators){
+        Double output = 0.0;
+
+        // the first while loop will take care of all multiplication and division
+        while(operators.contains('*')||operators.contains('/')){
+            for(int i=0; i<operators.size(); i++){
+                if(operators.get(i)=='*'||operators.get(i)=='/'){
+                    numbers.set(i, calculate(numbers.get(i), operators.get(i), numbers.get(i+1)));
+                    numbers.remove(i+1);
+                    operators.remove(i);
+                }
+            }
+        }
+        // the second while loop adds/subtracts all remaining numbers in order
+        while(operators.contains('+')||operators.contains('-')){
+            numbers.set(0, calculate(numbers.get(0), operators.get(0), numbers.get(1)));
+            numbers.remove(1);
+            operators.remove(0);
+        }
+
+        output = numbers.get(0);
+        return output;
     }
 }
